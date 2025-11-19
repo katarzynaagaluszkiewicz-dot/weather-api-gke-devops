@@ -2,7 +2,6 @@ package com.devops.weather.controller;
 
 import com.devops.weather.model.WeatherModel;
 import com.devops.weather.service.WeatherApiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +13,11 @@ import java.util.Map;
 @RequestMapping("/api/weather")
 public class WeatherController {
 
-    @Autowired
-    private WeatherApiService weatherService;
+    private final WeatherApiService weatherService;
+
+    public WeatherController(WeatherApiService weatherService) {
+        this.weatherService = weatherService;
+    }
 
     @GetMapping("/city/{cityName}")
     public ResponseEntity<?> getWeatherByCity(@PathVariable String cityName) {

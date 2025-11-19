@@ -1,0 +1,49 @@
+steps:
+  # 1. Build JAR
+  - name: 'maven:3.8.4-openjdk-17'
+    entrypoint: "mvn"
+    args: ["package", "-DskipTests"]
+
+  # 2. Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        "build",
+        "-t",
+        "us-central1-docker.pkg.dev/group-project-478615/weather-repo/weather-api:latest",
+        "."
+      ]
+
+  # 3. Push image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        "push",
+        "us-central1-docker.pkg.dev/group-project-478615/weather-repo/weather-api:latest"
+      ]
+
+  # 4. Deploy to GKE
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      [
+        "apply",
+        "-f",
+        "k8s/deployment.yaml"
+      ]
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=us-central1"
+      - "CLOUDSDK_CONTAINER_CLUSTER=weather-cluster"
+
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      [
+        "apply",
+        "-f",
+        "k8s/service.yaml"
+      ]
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=us-central1"
+      - "CLOUDSDK_CONTAINER_CLUSTER=weather-cluster"
+
+images:
+  - "us-central1-docker.pkg.dev/group-project-478615/weather-repo/weather-api:latest"

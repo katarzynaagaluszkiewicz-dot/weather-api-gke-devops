@@ -1,10 +1,442 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather API Proxy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .search-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .popular-cities {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .city-btn {
+            padding: 8px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .city-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .weather-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .weather-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .city-name {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .temperature {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .temperature-unit {
+            font-size: 0.5em;
+            opacity: 0.8;
+        }
+
+        .weather-description {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .weather-icon {
+            font-size: 4em;
+            margin: 10px 0;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .detail-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .error {
+            background: #fee;
+            border: 2px solid #fcc;
+            color: #c33;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .temperature {
+                font-size: 3em;
+            }
+        }
+    </style>
 </head>
 <body>
-$END$
+<div class="container">
+    <h1>🌤️ Weather API Proxy</h1>
+    <p class="subtitle">DevOps Demo - Local Development</p>
+
+    <div class="info-box">
+        <strong>ℹ️ Info:</strong> Ta aplikacja pobiera dane z Open-Meteo API, cache'uje je i prezentuje w przyjazny sposób. Dane są odświeżane co 10 minut.
+    </div>
+
+    <div class="search-section">
+        <h2>🔍 Wyszukaj pogodę</h2>
+
+        <div class="search-form">
+            <select id="citySelect">
+                <option value="">Wybierz miasto...</option>
+            </select>
+            <button class="btn" onclick="searchWeather()">Sprawdź pogodę</button>
+            <button class="btn btn-secondary" onclick="showAllCities()">Pokaż wszystkie</button>
+        </div>
+
+        <p style="margin-bottom: 10px;"><strong>Popularne miasta:</strong></p>
+        <div class="popular-cities">
+            <button class="city-btn" onclick="quickSearch('Warsaw')">🇵🇱 Warszawa</button>
+            <button class="city-btn" onclick="quickSearch('Krakow')">🇵🇱 Kraków</button>
+            <button class="city-btn" onclick="quickSearch('Gdansk')">🇵🇱 Gdańsk</button>
+            <button class="city-btn" onclick="quickSearch('London')">🇬🇧 Londyn</button>
+            <button class="city-btn" onclick="quickSearch('Paris')">🇫🇷 Paryż</button>
+            <button class="city-btn" onclick="quickSearch('Berlin')">🇩🇪 Berlin</button>
+        </div>
+    </div>
+
+    <div id="error" class="error" style="display: none;"></div>
+    <div id="loading" class="loading" style="display: none;">Ładowanie danych pogodowych...</div>
+    <div id="weatherDisplay" class="weather-display"></div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:8081' + '/api/weather';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAvailableCities();
+        quickSearch('Warsaw');
+    });
+
+    async function loadAvailableCities() {
+        try {
+            const response = await fetch(`${API_URL}/cities`);
+            const cities = await response.json();
+
+            const select = document.getElementById('citySelect');
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Nie udało się załadować listy miast:', error);
+        }
+    }
+
+    async function searchWeather() {
+        const citySelect = document.getElementById('citySelect');
+        const city = citySelect.value;
+
+        if (!city) {
+            showError('Wybierz miasto z listy');
+            return;
+        }
+
+        await fetchWeather(city);
+    }
+
+    async function quickSearch(city) {
+        const citySelect = document.getElementById('citySelect');
+        citySelect.value = city;
+
+        await fetchWeather(city);
+    }
+
+    async function showAllCities() {
+        showLoading();
+        try {
+            const response = await fetch(`${API_URL}/cities`);
+            const cities = await response.json();
+
+            const citiesToShow = cities.slice(0, 6);
+
+            const weatherPromises = citiesToShow.map(city =>
+                fetch(`${API_URL}/city/${city}`).then(r => r.json())
+            );
+
+            const weatherData = await Promise.all(weatherPromises);
+            displayMultipleWeather(weatherData);
+            hideError();
+        } catch (error) {
+            showError('Nie udało się pobrać danych pogodowych');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function fetchWeather(city) {
+        showLoading();
+        try {
+            const response = await fetch(`${API_URL}/city/${city}`);
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Nie udało się pobrać danych');
+            }
+
+            const weather = await response.json();
+            displayWeather([weather]);
+            hideError();
+        } catch (error) {
+            showError(error.message);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function displayWeather(weatherArray) {
+        const container = document.getElementById('weatherDisplay');
+
+        container.innerHTML = weatherArray.map(weather => `
+            <div class="weather-card">
+                <div class="city-name">${escapeHtml(weather.city)}</div>
+                <div class="weather-icon">${getWeatherIcon(weather.description)}</div>
+                <div class="temperature">
+                    ${weather.temperature.toFixed(1)}<span class="temperature-unit">°C</span>
+                </div>
+                <div class="weather-description">${escapeHtml(weather.description)}</div>
+
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <div class="detail-label">💨 Wiatr</div>
+                        <div class="detail-value">${weather.windSpeed.toFixed(1)} km/h</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">💧 Wilgotność</div>
+                        <div class="detail-value">${weather.humidity}%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">📍 Koordynaty</div>
+                        <div class="detail-value">${weather.latitude.toFixed(2)}, ${weather.longitude.toFixed(2)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">🕐 Aktualizacja</div>
+                        <div class="detail-value">${formatTime(weather.timestamp)}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function displayMultipleWeather(weatherArray) {
+        displayWeather(weatherArray);
+    }
+
+    function getWeatherIcon(description) {
+        const desc = description.toLowerCase();
+        if (desc.includes('clear')) return '☀️';
+        if (desc.includes('cloud')) return '☁️';
+        if (desc.includes('rain')) return '🌧️';
+        if (desc.includes('snow')) return '❄️';
+        if (desc.includes('thunder')) return '⛈️';
+        if (desc.includes('fog')) return '🌫️';
+        if (desc.includes('drizzle')) return '🌦️';
+        return '🌤️';
+    }
+
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('weatherDisplay').innerHTML = '';
+    }
+
+    function hideLoading() {
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    function showError(message) {
+        const errorEl = document.getElementById('error');
+        errorEl.textContent = '❌ ' + message;
+        errorEl.style.display = 'block';
+        document.getElementById('weatherDisplay').innerHTML = '';
+    }
+
+    function hideError() {
+        document.getElementById('error').style.display = 'none';
+    }
+</script>
 </body>
 </html>

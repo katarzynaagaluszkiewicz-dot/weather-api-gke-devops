@@ -1,4 +1,4 @@
-package devops.com.weather;
+package com.devops.weather;
 
 public class WeatherServiceTest {
 }

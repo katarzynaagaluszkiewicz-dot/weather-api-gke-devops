@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: weather-api
+  cache:
+    cache-names: weather
+    caffeine:
+      spec: maximumSize=100,expireAfterWrite=10m
+server:
+  port: 8081
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+logging:
+  level:
+    root: INFO
+    com.example.weather: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
+info:
+  app:
+    name: Weather API Proxy
+    description: Simple weather API using Open-Meteo
+    version: 1.0.0
+    data-source: Open-Meteo API

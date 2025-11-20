@@ -44,6 +44,19 @@ steps:
         "--project=$PROJECT_ID"
       ]
 
+  # 5. Update deployment image in GKE
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      [
+        "set",
+        "image",
+        "deployment/${_IMAGE}",
+        "${_IMAGE}=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest"
+      ]
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
+
   # 6. Apply configs 
   - name: "gcr.io/cloud-builders/kubectl"
     args:

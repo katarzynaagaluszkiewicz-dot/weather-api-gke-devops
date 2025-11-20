@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: weather-api
-          image: us-central1-docker.pkg.dev/group-project-478615/weather-repo/weather-api:latest
+          image: us-central1-docker.pkg.dev/group-project-478615/weather-repo/weather-api:${SHORT_SHA}
           ports:
             - containerPort: 8081

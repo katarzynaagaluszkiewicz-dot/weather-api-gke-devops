@@ -19,7 +19,7 @@ steps:
       [
         "build",
         "-t",
-        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest",
+        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${SHORT_SHA}",
         "."
       ]
 
@@ -28,7 +28,7 @@ steps:
     args:
       [
         "push",
-        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest"
+        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${SHORT_SHA}"
       ]
 
   # 4. Authenticate to GKE cluster
@@ -51,7 +51,7 @@ steps:
         "set",
         "image",
         "deployment/${_IMAGE}",
-        "${_IMAGE}=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest"
+        "${_IMAGE}=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${SHORT_SHA}"
       ]
     env:
       - "CLOUDSDK_COMPUTE_REGION=${_REGION}"

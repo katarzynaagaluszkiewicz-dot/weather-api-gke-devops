@@ -9,26 +9,26 @@ substitutions:
 
 steps:
   # 1. Build JAR
-  - name: 'maven:3.8.4-openjdk-17'
+  - name: "maven:3.8.4-openjdk-17"
     entrypoint: "mvn"
     args: ["package", "-DskipTests"]
 
   # 2. Build Docker image
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: "gcr.io/cloud-builders/docker"
     args:
       [
         "build",
         "-t",
-        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest",
-        "."
+        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${SHORT_SHA}",
+        ".",
       ]
 
   # 3. Push image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: "gcr.io/cloud-builders/docker"
     args:
       [
         "push",
-        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest"
+        "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${SHORT_SHA}",
       ]
 
   # 4. Authenticate to GKE cluster
@@ -41,8 +41,15 @@ steps:
         "get-credentials",
         "${_CLUSTER}",
         "--region=${_REGION}",
-        "--project=$PROJECT_ID"
+        "--project=$PROJECT_ID",
       ]
+
+  # 6. Apply configs
+  - name: "gcr.io/cloud-builders/kubectl"
+    args: ["apply", "-f", "k8s/"]
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+      - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
 
   # 5. Update deployment image in GKE
   - name: "gcr.io/cloud-builders/kubectl"
@@ -51,23 +58,11 @@ steps:
         "set",
         "image",
         "deployment/${_IMAGE}",
-        "${_IMAGE}=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest"
-      ]
-    env:
-      - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
-      - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
-
-  # 6. Apply configs 
-  - name: "gcr.io/cloud-builders/kubectl"
-    args:
-      [
-        "apply",
-        "-f",
-        "k8s/"
+        "${_IMAGE}=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${SHORT_SHA}",
       ]
     env:
       - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
       - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}"
 
 images:
-  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:latest"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_IMAGE}:${SHORT_SHA}"

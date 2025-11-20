@@ -2,6 +2,7 @@
 resource "google_container_cluster" "primary" {
   name     = var.gke_cluster_name
   location = var.region
+  deletion_protection = false
 
   network    = google_compute_network.main.id
   subnetwork = google_compute_subnetwork.main.name

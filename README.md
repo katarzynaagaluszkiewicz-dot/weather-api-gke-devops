@@ -18,7 +18,7 @@ Projekt demonstruje pełny pipeline DevOps na Google Cloud Platform (GCP) z wyko
 
 This repository contains a Terraform configuration (main.tf), that provisions a basic Kubernetes environment on Google Cloud Platform (GCP) using Google Kubernetes Engine (GKE).
 
-## The Configuration defines the following components:
+## The Cluster configuration:
 
 - VPC network – custom VPC named 'gke-network' with automatic subnet creation disabled.
 - Subnetwork – subnet 'gke-subnet' in region 'us-central1' with CIDR range '10.0.0.0/16', attached to the custom VPC.
@@ -32,6 +32,7 @@ This repository contains a Terraform configuration (main.tf), that provisions a 
 
 ```bash
 git clone https://github.com/joannawalach1/weather-api-gke-devops.git
+
 
 
 

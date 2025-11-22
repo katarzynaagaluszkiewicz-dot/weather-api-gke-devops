@@ -49,7 +49,18 @@ Some resources was created manually:
 
 - **Cloud Build Trigger** - GitHub connection requires browser-based OAuth authorization
 - **GCS Bucket for Terraform Backend** - The bucket used to store Terraform state remotely must exist before Terraform is initialized
-  
+
+# Cluster GKE
+
+This repository contains a Terraform configuration (main.tf), that provisions a basic Kubernetes environment on Google Cloud Platform (GCP) using Google Kubernetes Engine (GKE).
+
+## Cluster configuration:
+
+- VPC network – custom VPC named 'gke-network' with automatic subnet creation disabled.
+- Subnetwork – subnet 'gke-subnet' in region 'us-central1' with CIDR range '10.0.0.0/16', attached to the custom VPC.
+- GKE cluster – regional Kubernetes cluster 'moj-gke-klaster' in 'us-central1', using the custom VPC and subnet.
+- Node pool – node pool 'primary-nodes' with 'e2-small' instances, attached to the cluster.
+
 ---
 
 ## 🗂️ Artifact Registry
@@ -129,3 +140,4 @@ Billing report is included in the BILLING_REPORT.md file.
 - Kwolek Emilia
 - Morawska Katarzyna
 - Wałach Joanna
+

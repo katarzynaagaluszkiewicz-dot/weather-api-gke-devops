@@ -23,7 +23,7 @@ This repository contains a Terraform configuration (main.tf), that provisions a 
 - VPC network – custom VPC named 'gke-network' with automatic subnet creation disabled.
 - Subnetwork – subnet 'gke-subnet' in region 'us-central1' with CIDR range '10.0.0.0/16', attached to the custom VPC.
 - GKE cluster – regional Kubernetes cluster 'moj-gke-klaster' in 'us-central1', using the custom VPC and subnet.
-- Node pool – node pool 'primary-nodes' with 'e2-micro' instances, attached to the cluster.
+- Node pool – node pool 'primary-nodes' with 'e2-small' instances, attached to the cluster.
 
 
 ## Jak uruchomić lokalnie
@@ -32,5 +32,6 @@ This repository contains a Terraform configuration (main.tf), that provisions a 
 
 ```bash
 git clone https://github.com/joannawalach1/weather-api-gke-devops.git
+
 
 

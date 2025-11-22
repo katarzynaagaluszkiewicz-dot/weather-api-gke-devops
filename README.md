@@ -111,6 +111,18 @@ This provides a stable public endpoint for accessing the Weather API.
 
 ---
 
+## 📊 Cloud Monitoring
+
+The Logging and Monitoring Services are configured alongside the main cluster configuration, using terraform. They collect data regarding system components and the api server, and allow for their easy access and consolidated view using multiple dashboards. These dashboards include GKE Cluster Monitoring, GKE Compute Resources - Cluster View, GKE Compute Resources - Node View, GKE Compute Resources - Workload View, GKE Nodes and Pods - Cluster View, Logs Dashboard - which show the collected data in a user-friendly, aggregated manner.
+
+---
+
+## Billing Report
+
+Billing report is included in the BILLING_REPORT.md file.
+
+---
+
 ## 👩‍💻 Authors
 
 - Gałuszkiewicz Katarzyna
